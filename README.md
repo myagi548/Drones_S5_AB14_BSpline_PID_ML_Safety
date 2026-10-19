@@ -11,7 +11,7 @@
 |---|---|---|
 | P. Myagi Ranganadh | CB.SC.U4AIE24143 | patimamyagi@gmail.com |
 | Devi Sri | CB.SC.U4AIE24163 | chodagiridevisri@gmail.com |
-| Monisha | CB.SC.U4AIE24157 | To be added |
+| Monisha | CB.SC.U4AIE24157 | vemurimonisha@gmial.com |
 
 ---
 
