@@ -1,3 +1,4 @@
+
 # Autonomous Drone Navigation, B-Spline Trajectory Planning, and ML-Assisted Safety Recovery Using MuJoCo
 
 <p align="center">
@@ -94,67 +95,67 @@ A B-spline is a piecewise polynomial curve that can be used to represent a smoot
 
 The trajectory is represented as
 
-\[
+$$
 \mathbf{P}(u)=\sum_{i=0}^{n}N_{i,p}(u)\mathbf{P}_i
-\]
+$$
 
-where \(\mathbf{P}(u)\) is the trajectory position, \(\mathbf{P}_i\) are control points, \(N_{i,p}(u)\) are B-spline basis functions, \(u\) is the curve parameter, and \(p\) is the degree.
+where $\mathbf{P}(u)$ is the trajectory position, $\mathbf{P}_i$ are control points, $N_{i,p}(u)$ are B-spline basis functions, $u$ is the curve parameter, and $p$ is the degree.
 
 The implemented trajectory uses a cubic B-spline:
 
-\[
+$$
 p=3
-\]
+$$
 
 The degree-zero basis functions are
 
-\[
+$$
 N_{i,0}(u)=
 \begin{cases}
-1,&u_i\leq u<u_{i+1}\\
-0,&\text{otherwise}
+1, & u_i\leq u<u_{i+1}\\
+0, & \text{otherwise}
 \end{cases}
-\]
+$$
 
-For degree \(p\geq1\), the Cox–de Boor recursion is
+For degree $p\geq1$, the Cox–de Boor recursion is
 
-\[
+$$
 \begin{aligned}
 N_{i,p}(u)
 ={}&\frac{u-u_i}{u_{i+p}-u_i}N_{i,p-1}(u)\\
 &+\frac{u_{i+p+1}-u}{u_{i+p+1}-u_{i+1}}
 N_{i+1,p-1}(u).
 \end{aligned}
-\]
+$$
 
 Terms with zero denominators are treated as zero.
 
 The sampled path length can be approximated by
 
-\[
+$$
 L\approx\sum_{k=0}^{N-1}
-\left\|\mathbf{P}_{k+1}-\mathbf{P}_k\right\|_2.
-\]
+\left\|\mathbf{P}_{k+1}-\mathbf{P}_k\right\|_2
+$$
 
-The current simulation generated 1,601 sampled B-spline points. This sampling supports visualization and collision checks, but sampling alone does not prove continuous collision avoidance.
+The current simulation generated 1,601 sampled B-spline points. Sampling supports visualization and collision checks, but does not prove continuous collision avoidance.
 
 ### 3.3 Obstacle Representation and Collision Checking
 
 Obstacle boxes are expanded using a safety margin before checking sampled trajectory points.
 
-For an axis-aligned obstacle with center \(\mathbf{c}\), half-extents \(\mathbf{h}\), and inflation distance \(d\),
+For an axis-aligned obstacle with center $\mathbf{c}$, half-extents $\mathbf{h}$, and inflation distance $d$,
 
-\[
-\mathbf{h}_{\mathrm{inflated}}=\mathbf{h}+d\mathbf{1}.
-\]
+$$
+\mathbf{h}_{\mathrm{inflated}}=\mathbf{h}+d\mathbf{1}
+$$
 
-A point \(\mathbf{x}\) lies inside the inflated box when
+A point $\mathbf{x}$ lies inside the inflated box when
 
-\[
+$$
 |x_j-c_j|\leq h_{\mathrm{inflated},j}
-\]
+$$
 
-for every coordinate axis \(j\).
+for every coordinate axis $j$.
 
 The validation script checks sampled path points and records collision-related outcomes. These checks apply to the tested configuration and do not prove that the complete drone body remains collision-free at every instant.
 
@@ -162,59 +163,65 @@ The validation script checks sampled path points and records collision-related o
 
 The drone's position is represented by
 
-\[
-\mathbf{p}=[x,y,z]^\top
-\]
+$$
+\mathbf{p}=
+\begin{bmatrix}
+x\\y\\z
+\end{bmatrix}
+$$
 
-and its attitude by
+Its attitude is represented by
 
-\[
-\boldsymbol{\eta}=[\phi,\theta,\psi]^\top,
-\]
+$$
+\boldsymbol{\eta}=
+\begin{bmatrix}
+\phi\\\theta\\\psi
+\end{bmatrix}
+$$
 
-where \(\phi\) is roll, \(\theta\) is pitch, and \(\psi\) is yaw.
+where $\phi$ is roll, $\theta$ is pitch, and $\psi$ is yaw.
 
 Position tracking error is
 
-\[
+$$
 \mathbf{e}_p(t)=
-\mathbf{p}_{\mathrm{ref}}(t)-\mathbf{p}(t).
-\]
+\mathbf{p}_{\mathrm{ref}}(t)-\mathbf{p}(t)
+$$
 
 Attitude error is
 
-\[
+$$
 \mathbf{e}_{\eta}(t)=
-\boldsymbol{\eta}_{\mathrm{ref}}(t)-\boldsymbol{\eta}(t).
-\]
+\boldsymbol{\eta}_{\mathrm{ref}}(t)-\boldsymbol{\eta}(t)
+$$
 
-For angle differences, appropriate angular wrapping should be used.
+For angular differences, appropriate angle wrapping should be used.
 
 ### 3.5 PID Control
 
 A PID controller combines proportional, integral, and derivative responses to the control error:
 
-\[
+$$
 u(t)=K_p e(t)
 +K_i\int_0^t e(\tau)\,d\tau
-+K_d\frac{de(t)}{dt}.
-\]
++K_d\frac{de(t)}{dt}
+$$
 
-Here, \(K_p\), \(K_i\), and \(K_d\) represent the proportional, integral, and derivative gains.
+Here, $K_p$, $K_i$, and $K_d$ represent the proportional, integral, and derivative gains.
 
 A discrete-time approximation is
 
-\[
+$$
 I_k=I_{k-1}+e_k\Delta t
-\]
+$$
 
-\[
+$$
 D_k\approx\frac{e_k-e_{k-1}}{\Delta t}
-\]
+$$
 
-\[
-u_k=K_p e_k+K_i I_k+K_dD_k.
-\]
+$$
+u_k=K_p e_k+K_i I_k+K_dD_k
+$$
 
 These equations explain the PID principle. The actual gains and control implementation must be verified from the project's controller source files.
 
@@ -226,12 +233,14 @@ A wind-disturbance phase is included between approximately 16 and 21 seconds.
 
 The configured force disturbance is
 
-\[
+$$
 \mathbf{F}_{\mathrm{wind}}=
 \begin{bmatrix}
-0.45&1.8&0
-\end{bmatrix}^{\top}.
-\]
+0.45\\
+1.8\\
+0
+\end{bmatrix}
+$$
 
 This is a configured simulation force, not a measured real-world wind speed.
 
@@ -239,22 +248,25 @@ This is a configured simulation force, not a measured real-world wind speed.
 
 An attitude-related torque disturbance is introduced during the safety phase:
 
-\[
+$$
 \boldsymbol{\tau}_{\mathrm{disturbance}}=
 \begin{bmatrix}
-0&4.0&0
-\end{bmatrix}^{\top}.
-\]
+0\\
+4.0\\
+0
+\end{bmatrix}
+$$
 
 The configured recovery condition is
 
-\[
-\text{recovering}=
-(p_{\mathrm{unsafe}}\geq0.20)
-\land(21.0\leq t<27.0),
-\]
+$$
+\mathrm{recovering}=
+\left(p_{\mathrm{unsafe}}\geq0.20\right)
+\land
+\left(21.0\leq t<27.0\right)
+$$
 
-where \(p_{\mathrm{unsafe}}\) is the predicted unsafe probability.
+where $p_{\mathrm{unsafe}}$ is the predicted unsafe probability.
 
 The threshold is specific to this demonstration and has not been established as a suitable threshold for real flight.
 
@@ -262,12 +274,12 @@ The threshold is specific to this demonstration and has not been established as 
 
 Logistic regression estimates the probability of an unsafe state from a feature vector:
 
-\[
+$$
 p(y=1\mid\mathbf{x})=
-\frac{1}{1+\exp[-(b+\mathbf{w}^{\top}\mathbf{x})]}.
-\]
+\frac{1}{1+\exp\left[-(b+\mathbf{w}^{\top}\mathbf{x})\right]}
+$$
 
-Here, \(\mathbf{x}\) represents input features, \(\mathbf{w}\) is the coefficient vector, and \(b\) is the intercept.
+Here, $\mathbf{x}$ represents input features, $\mathbf{w}$ is the coefficient vector, and $b$ is the intercept.
 
 The current classifier uses synthetic labels. It demonstrates the integration of a machine-learning prediction with the recovery logic, but its accuracy on real drone data has not been established.
 
@@ -287,42 +299,50 @@ The current classifier uses synthetic labels. It demonstrates the integration of
 
 The configured final target is
 
-\[
+$$
 \mathbf{p}_{\mathrm{goal}}=
 \begin{bmatrix}
-9.5&0&1.0
-\end{bmatrix}^{\top}.
-\]
+9.5\\
+0\\
+1.0
+\end{bmatrix}
+$$
 
 ### 3.10 Observability and Controllability
 
 For a linear state-space model,
 
-\[
-\dot{\mathbf{x}}=A\mathbf{x}+B\mathbf{u},
-\qquad
-\mathbf{y}=C\mathbf{x},
-\]
+$$
+\dot{\mathbf{x}}=A\mathbf{x}+B\mathbf{u}
+$$
+
+$$
+\mathbf{y}=C\mathbf{x}
+$$
 
 the observability matrix is
 
-\[
+$$
 \mathcal{O}=
 \begin{bmatrix}
-C\\CA\\CA^2\\\vdots\\CA^{n-1}
+C\\
+CA\\
+CA^2\\
+\vdots\\
+CA^{n-1}
 \end{bmatrix}
-\]
+$$
 
-and the controllability matrix is
+The controllability matrix is
 
-\[
+$$
 \mathcal{C}=
 \begin{bmatrix}
-B&AB&A^2B&\cdots&A^{n-1}B
-\end{bmatrix}.
-\]
+B & AB & A^2B & \cdots & A^{n-1}B
+\end{bmatrix}
+$$
 
-For an \(n\)-state model, full observability and controllability require the respective matrices to have rank \(n\).
+For an $n$-state model, full observability and controllability require the respective matrices to have rank $n$.
 
 A verified numerical analysis requires defined state-space matrices. The current measured results do not include a completed rank calculation, so no numerical observability or controllability claim is made here.
 
@@ -367,7 +387,7 @@ The following values are taken from the available simulation and validation outp
 | B-spline samples | 1,601 |
 | Drone geometry count | 3 |
 | Obstacle geometry count | 3 |
-| Final target | \([9.5,0,1.0]\) |
+| Final target | $(9.5,0,1.0)$ |
 | Unsafe prediction steps | 53 |
 | Recovery-active steps | 53 |
 
@@ -375,7 +395,7 @@ These values describe the recorded run, not a statistical evaluation across mult
 
 ## 6. Results and Discussion
 
-**The figures in this section are generated by the project. They are not reference images from the internet.**
+**The figures in this section are intended to be generated by the project. They are not reference images from the internet.**
 
 ### 6.1 Actual Simulated Drone Trajectory
 
@@ -444,9 +464,9 @@ The project generates the following result files:
 
 | File | Description |
 |---|---|
-| `results/final_trajectory.png` | Actual generated trajectory plot |
-| `results/final_attitude.png` | Actual generated attitude plot |
-| `results/final_safety.png` | Actual generated safety plot |
+| `results/final_trajectory.png` | Generated trajectory plot |
+| `results/final_attitude.png` | Generated attitude plot |
+| `results/final_safety.png` | Generated safety plot |
 | `results/trajectory.png` | Additional trajectory plot |
 | `results/attitude.png` | Additional attitude plot |
 | `results/bspline_trajectory.csv` | Sampled trajectory data |
@@ -454,7 +474,7 @@ The project generates the following result files:
 | `results/drone_collision_events.csv` | Collision-event output |
 | `results/flight_validation_summary.txt` | Validation summary |
 
-The README image paths refer to these local repository files. If a file is missing or has a different filename, regenerate the plot or update the image path to match the actual file.
+The README image paths refer to local repository files. If a file is missing or has a different filename, regenerate the plot or update the image path to match the actual file.
 
 ## 8. How to Run the Project
 
@@ -493,6 +513,8 @@ python full_drone_demo.py
 
 ### 8.5 Run Validation and Analysis
 
+Run these commands from the repository root, checking each output before continuing.
+
 ```powershell
 python validate_drone.py
 ```
@@ -509,7 +531,7 @@ python analyze_flight_results.py
 python create_final_graphs.py
 ```
 
-Run the commands from the repository root unless the corresponding script specifies otherwise. Check the terminal output for errors and confirm that the expected result files are created.
+Check the terminal output for errors and confirm that the expected result files are created.
 
 ## 9. Limitations and Future Work
 
@@ -525,7 +547,7 @@ Run the commands from the repository root unless the corresponding script specif
 
 ### 9.2 Future Improvements
 
-- Train and evaluate the classifier using representative, independently labeled flight data.
+- Train and evaluate the classifier using representative, independently labelled flight data.
 - Report confusion-matrix counts, precision, recall, F1-score, and probability calibration.
 - Implement individual rotor thrust and reaction-torque dynamics.
 - Improve trajectory tracking and document controller gains.
