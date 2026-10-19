@@ -5,236 +5,284 @@
   <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Amrita-vishwa-vidyapeetham-logo.svg" alt="Amrita Vishwa Vidyapeetham Logo" width="180"/>
 </p>
 
-<p align="center">
-  <strong>Amrita Vishwa Vidyapeetham</strong><br>
-  School of Artificial Intelligence<br>
-  Coimbatore, Tamil Nadu, India
-</p>
+## Team Members
+
+| Name | Register Number | Email |
+|---|---|---|
+| P. Myagi Ranganadh | CB.SC.U4AIE24143 | patimamyagi@gmail.com |
+| Devi Sri | CB.SC.U4AIE24163 | chodagiridevisri@gmail.com |
+| Monisha | CB.SC.U4AIE24157 | To be added |
 
 ---
 
-## Team Members
-
-| S. No. | Name | Roll Number | Email |
-|---|---|---|---|
-| 1 | P. Myagi Ranganadh | CB.SC.U4AIE24143 | patimamyagi@gmail.com |
-| 2 | Devi Sri | CB.SC.U4AIE24163 | chodagiridevisri@gmail.com |
-| 3 | Monisha | CB.SC.U4AIE24157 | To be added |
-
 ## Abstract
 
-Autonomous drone navigation requires trajectory planning, motion control, obstacle awareness, disturbance handling, and safety monitoring. This project presents a simulation-based autonomous drone navigation and safety-recovery demonstration using the MuJoCo physics engine and Python.
+This project presents an autonomous drone navigation and safety monitoring system developed using MuJoCo and Python. The system combines cubic B-spline trajectory planning, obstacle avoidance, PID-based control, attitude monitoring, and machine-learning-assisted safety prediction.
 
-The system integrates cubic B-spline trajectory generation, waypoint-based navigation, attitude monitoring, disturbance simulation, logistic regression-based safety prediction, and recovery logic. The simulated mission includes takeoff, hovering, obstacle clearance, navigation through multiple target phases, wind disturbance, attitude disturbance, safety prediction, recovery, and landing.
+The simulated drone follows a planned trajectory while navigating around obstacles and moving toward multiple targets. Wind disturbances and attitude disturbances are introduced to evaluate the system's response. A Logistic Regression classifier predicts unsafe flight conditions, and a recovery controller attempts to restore safe flight behavior.
 
-The recorded simulation lasted approximately 46 seconds and generated 1,601 sampled B-spline trajectory points. The validation output reported zero sampled path points inside inflated obstacle boxes, zero recorded contact events, zero obstacle-contact steps, zero floor-contact steps, and zero penetration steps. The maximum tracking error was 1.0500 m, the maximum absolute pitch was 14.139 degrees, and 53 unsafe prediction steps and 53 recovery-active steps were recorded.
+The project evaluates trajectory tracking, obstacle clearance, attitude stability, safety prediction, and recovery performance in a physics-based simulation environment.
 
-These results demonstrate the implemented simulation workflow under the tested conditions. They do not establish real-world flight readiness, continuous collision-free motion, or general machine-learning predictive accuracy. The classifier uses synthetic labels, and the current full demo applies body-level forces and torques rather than modelling individual quadrotor motors.
+## Keywords
 
-**Keywords:** Autonomous Drone, MuJoCo, B-Spline Trajectory Planning, PID Control, Obstacle Avoidance, Logistic Regression, Safety Prediction, Attitude Recovery.
+Autonomous Drone, MuJoCo, B-Spline Trajectory, Obstacle Avoidance, PID Controller, Logistic Regression, Attitude Recovery, Machine Learning, Drone Simulation.
 
-## 1. Introduction
+---
 
-### 1.1 Background
+# 1. Introduction
 
-Autonomous drones must follow desired paths while maintaining stability and responding to obstacles and disturbances. Trajectory planning determines the intended path, while control algorithms influence the drone's motion. Safety monitoring can help identify potentially unsafe states and activate a recovery response.
+## 1.1 Background
 
-Physics-based simulation provides a controlled environment for developing and testing these functions before considering physical deployment.
+Autonomous drones are used in surveillance, inspection, delivery, mapping, and search-and-rescue applications. These tasks require a drone to navigate through an environment while maintaining stability and avoiding obstacles.
 
-### 1.2 Problem Statement
+A reliable autonomous drone system needs trajectory planning, flight control, obstacle detection, and safety monitoring. Disturbances such as wind and sudden attitude changes can affect flight stability and cause deviations from the desired trajectory.
 
-The objective is to develop a simulated autonomous drone workflow that generates a smooth navigation trajectory, follows a multi-phase mission, encounters disturbances, predicts potentially unsafe conditions, and executes recovery logic before completing the mission.
+This project integrates these components into a simulated drone navigation system using MuJoCo.
 
-### 1.3 Objectives
+## 1.2 Problem Statement
 
-- Develop a drone simulation using MuJoCo and Python.
-- Generate a smooth cubic B-spline trajectory.
-- Simulate takeoff, hovering, obstacle clearance, target navigation, and landing.
+A drone navigating an environment may deviate from its planned path because of obstacles, external disturbances, or unstable attitude. Without suitable monitoring and recovery mechanisms, these deviations can affect navigation performance and safety.
+
+Therefore, this project develops a simulated autonomous drone system that plans collision-aware trajectories, monitors its position and attitude, predicts unsafe conditions using machine learning, and activates a recovery controller when required.
+
+## 1.3 Objectives
+
+- Develop an autonomous drone simulation using MuJoCo.
+- Generate smooth trajectories using cubic B-splines.
+- Plan navigation paths around obstacles.
+- Implement PID-based attitude control.
 - Introduce wind and attitude disturbances.
-- Integrate logistic regression-based safety prediction.
-- Activate recovery logic according to the configured safety condition.
-- Record trajectory, attitude, collision, and flight-log results.
-- Validate the recorded run using the available analysis scripts.
+- Predict unsafe flight conditions using Logistic Regression.
+- Activate a recovery controller when the safety condition is triggered.
+- Evaluate the simulation using trajectory, attitude, and safety results.
 
-### 1.4 Scope
+## 1.4 Scope
 
-This project is a simulation-based prototype. Physical drone testing, real sensor integration, validation against real flight data, and proof of continuous collision avoidance are outside the demonstrated scope.
+The project focuses on simulation-based autonomous navigation and safety monitoring. It does not demonstrate a real-world drone flight or certify real-world collision avoidance.
 
-## 2. System Architecture
+---
+
+# 2. System Architecture
+
+The system follows this overall workflow:
 
 ```mermaid
 flowchart TD
-    A[Initialize MuJoCo Model] --> B[Generate B-Spline Trajectory]
-    B --> C[Execute Navigation Phases]
-    C --> D[Monitor Position and Attitude]
-    D --> E[Apply Disturbances]
-    E --> F[Extract Safety Features]
-    F --> G[Logistic Regression Prediction]
-    G --> H{Unsafe Probability Above Threshold?}
-    H -- Yes --> I[Activate Recovery Logic]
-    H -- No --> J[Continue Navigation]
-    I --> K[Resume Mission]
-    J --> K
-    K --> L[Landing and Mission Completion]
-    L --> M[Analyze Logs and Validate Results]
+    A[Initialize MuJoCo Simulation] --> B[Generate B-Spline Trajectory]
+    B --> C[Plan Obstacle-Aware Navigation]
+    C --> D[Track Desired Position]
+    D --> E[Monitor Position and Attitude]
+    E --> F[Apply PID Control]
+    F --> G[Introduce Wind or Attitude Disturbance]
+    G --> H[Extract Safety Features]
+    H --> I[Logistic Regression Prediction]
+    I --> J{Unsafe Condition?}
+    J -- Yes --> K[Activate Recovery Controller]
+    J -- No --> L[Continue Navigation]
+    K --> M[Monitor Stability]
+    L --> M
+    M --> N[Reach Target and Record Results]
 ```
 
-**Figure 1.** Architecture of the simulated drone navigation and safety-recovery workflow.
+## 2.1 Main Components
 
-## 3. Methodology
+| Component | Purpose |
+|---|---|
+| MuJoCo | Physics-based simulation environment |
+| B-Spline Planner | Generates smooth reference trajectories |
+| Obstacle Planner | Searches for collision-free sampled paths |
+| Position Controller | Tracks the desired drone position |
+| PID Controller | Computes corrective control commands |
+| Disturbance Model | Introduces wind and attitude disturbances |
+| Logistic Regression | Predicts unsafe conditions from extracted features |
+| Recovery Controller | Attempts to restore safe attitude |
+| Results Logger | Records flight data and evaluation metrics |
 
-### 3.1 Simulation Environment
+---
 
-MuJoCo is used to simulate the drone and environment. Python scripts generate the trajectory, coordinate the mission phases, apply control inputs and disturbances, and collect simulation results.
+# 3. Methodology
 
-The main demonstration is implemented in `full_drone_demo.py`. Supporting scripts handle validation, collision checking, attitude tests, and result visualization.
+## 3.1 MuJoCo Simulation Environment
 
-### 3.2 Cubic B-Spline Trajectory Planning
+MuJoCo is used to simulate the drone and its surrounding environment. The simulation contains the drone, obstacles, a floor, target locations, and control logic.
 
-A B-spline is a piecewise polynomial curve that can be used to represent a smooth path.
+The simulation state is updated over discrete time steps. At each step, the controller reads the current state, computes control commands, and applies them to the simulated drone.
 
-The trajectory is represented as
+The simulation uses a time step of approximately 0.01 seconds.
+
+## 3.2 Cubic B-Spline Trajectory Planning
+
+A B-spline is a piecewise polynomial curve used to generate smooth trajectories. It is controlled by control points and a knot vector.
+
+The general B-spline curve is defined as
 
 $$
-\mathbf{P}(u)=\sum_{i=0}^{n}N_{i,p}(u)\mathbf{P}_i
+\mathbf{P}(u)=
+\sum_{i=0}^{n}N_{i,p}(u)\mathbf{P}_i
 $$
 
-where $\mathbf{P}(u)$ is the trajectory position, $\mathbf{P}_i$ are control points, $N_{i,p}(u)$ are B-spline basis functions, $u$ is the curve parameter, and $p$ is the degree.
+where:
 
-The implemented trajectory uses a cubic B-spline:
+- $\mathbf{P}(u)$ is the point on the curve.
+- $\mathbf{P}_i$ is the $i$-th control point.
+- $N_{i,p}(u)$ is the B-spline basis function.
+- $p$ is the polynomial degree.
+- $u$ is the curve parameter.
+- $n+1$ is the number of control points.
+
+For a cubic B-spline,
 
 $$
 p=3
 $$
 
-The degree-zero basis functions are
+The degree-zero basis functions are defined as
 
 $$
 N_{i,0}(u)=
 \begin{cases}
-1, & u_i\leq u<u_{i+1}\\
-0, & \text{otherwise}
+1, & u_i \leq u < u_{i+1},\\
+0, & \text{otherwise}.
 \end{cases}
 $$
 
-For degree $p\geq1$, the Cox–de Boor recursion is
+Higher-degree basis functions are calculated recursively using the Cox-de Boor formula:
 
 $$
-\begin{aligned}
-N_{i,p}(u)
-={}&\frac{u-u_i}{u_{i+p}-u_i}N_{i,p-1}(u)\\
-&+\frac{u_{i+p+1}-u}{u_{i+p+1}-u_{i+1}}
-N_{i+1,p-1}(u).
-\end{aligned}
+N_{i,p}(u)=
+\frac{u-u_i}{u_{i+p}-u_i}N_{i,p-1}(u)
++
+\frac{u_{i+p+1}-u}{u_{i+p+1}-u_{i+1}}N_{i+1,p-1}(u)
 $$
 
-Terms with zero denominators are treated as zero.
+A term with a zero denominator is treated as zero.
 
-The sampled path length can be approximated by
+The trajectory is sampled at multiple parameter values to obtain reference positions for navigation.
 
-$$
-L\approx\sum_{k=0}^{N-1}
-\left\|\mathbf{P}_{k+1}-\mathbf{P}_k\right\|_2
-$$
+## 3.3 Obstacle Representation and Path Planning
 
-The current simulation generated 1,601 sampled B-spline points. Sampling supports visualization and collision checks, but does not prove continuous collision avoidance.
+Obstacles are represented using axis-aligned bounding boxes. A clearance distance is added to the obstacle dimensions to create an inflated obstacle region.
 
-### 3.3 Obstacle Representation and Collision Checking
-
-Obstacle boxes are expanded using a safety margin before checking sampled trajectory points.
-
-For an axis-aligned obstacle with center $\mathbf{c}$, half-extents $\mathbf{h}$, and inflation distance $d$,
+For an obstacle centered at $\mathbf{c}$ with half-extents $\mathbf{h}$, the inflated half-extents are
 
 $$
-\mathbf{h}_{\mathrm{inflated}}=\mathbf{h}+d\mathbf{1}
+\mathbf{h}_{inflated}=\mathbf{h}+d_s\mathbf{1}
 $$
 
-A point $\mathbf{x}$ lies inside the inflated box when
+where $d_s$ is the safety clearance and $\mathbf{1}$ is a vector of ones.
+
+A sampled point $\mathbf{p}$ is inside the inflated box if
 
 $$
-|x_j-c_j|\leq h_{\mathrm{inflated},j}
+|p_x-c_x|\leq h_x+d_s
 $$
 
-for every coordinate axis $j$.
+$$
+|p_y-c_y|\leq h_y+d_s
+$$
 
-The validation script checks sampled path points and records collision-related outcomes. These checks apply to the tested configuration and do not prove that the complete drone body remains collision-free at every instant.
+$$
+|p_z-c_z|\leq h_z+d_s
+$$
 
-### 3.4 Position and Attitude Monitoring
+If all three conditions are satisfied, the point is considered inside the inflated obstacle region.
+
+The planner evaluates candidate paths against the inflated obstacles and selects a collision-free sampled path when one is available. The selected waypoints are used to construct the navigation trajectory.
+
+This sampled checking approach does not by itself guarantee continuous collision avoidance between every pair of samples or account for the full swept volume of the drone.
+
+## 3.4 Position and Attitude Monitoring
 
 The drone's position is represented by
 
 $$
 \mathbf{p}=
 \begin{bmatrix}
-x\\y\\z
+x\\
+y\\
+z
 \end{bmatrix}
 $$
 
-Its attitude is represented by
+where $x$, $y$, and $z$ represent the drone's position along the three coordinate axes.
+
+The drone's attitude is represented by
 
 $$
 \boldsymbol{\eta}=
 \begin{bmatrix}
-\phi\\\theta\\\psi
+\phi\\
+\theta\\
+\psi
 \end{bmatrix}
 $$
 
-where $\phi$ is roll, $\theta$ is pitch, and $\psi$ is yaw.
+where $\phi$ represents roll, $\theta$ represents pitch, and $\psi$ represents yaw.
 
-Position tracking error is
-
-$$
-\mathbf{e}_p(t)=
-\mathbf{p}_{\mathrm{ref}}(t)-\mathbf{p}(t)
-$$
-
-Attitude error is
+The position tracking error is
 
 $$
-\mathbf{e}_{\eta}(t)=
-\boldsymbol{\eta}_{\mathrm{ref}}(t)-\boldsymbol{\eta}(t)
+\mathbf{e}_p=
+\mathbf{p}_{desired}-\mathbf{p}_{actual}
 $$
 
-For angular differences, appropriate angle wrapping should be used.
-
-### 3.5 PID Control
-
-A PID controller combines proportional, integral, and derivative responses to the control error:
+The attitude tracking error is
 
 $$
-u(t)=K_p e(t)
-+K_i\int_0^t e(\tau)\,d\tau
+\mathbf{e}_{\eta}=
+\boldsymbol{\eta}_{desired}-
+\boldsymbol{\eta}_{actual}
+$$
+
+These errors help evaluate the difference between the desired and actual drone states. The controller uses state information to maintain stability and follow the planned trajectory.
+
+## 3.5 PID Controller
+
+A Proportional-Integral-Derivative controller calculates a corrective control signal using the current error, accumulated error, and rate of change of error.
+
+The continuous PID control law is
+
+$$
+u(t)=K_p e(t)+K_i\int_0^t e(\tau)\,d\tau
 +K_d\frac{de(t)}{dt}
 $$
 
-Here, $K_p$, $K_i$, and $K_d$ represent the proportional, integral, and derivative gains.
+where:
 
-A discrete-time approximation is
+- $u(t)$ is the control output.
+- $e(t)$ is the tracking error.
+- $K_p$ is the proportional gain.
+- $K_i$ is the integral gain.
+- $K_d$ is the derivative gain.
+
+The proportional term responds to the current error. The integral term accounts for accumulated error, while the derivative term responds to the rate at which error changes.
+
+In discrete time, the integral and derivative can be approximated as
 
 $$
 I_k=I_{k-1}+e_k\Delta t
 $$
 
 $$
-D_k\approx\frac{e_k-e_{k-1}}{\Delta t}
+D_k=\frac{e_k-e_{k-1}}{\Delta t}
 $$
 
-$$
-u_k=K_p e_k+K_i I_k+K_dD_k
-$$
-
-These equations explain the PID principle. The actual gains and control implementation must be verified from the project's controller source files.
-
-**Implementation limitation:** The current full demonstration applies body-level forces and torques through MuJoCo's `data.xfrc_applied` interface. It is not a complete four-rotor actuation model.
-
-### 3.6 Wind Disturbance
-
-A wind-disturbance phase is included between approximately 16 and 21 seconds.
-
-The configured force disturbance is
+The resulting control command is
 
 $$
-\mathbf{F}_{\mathrm{wind}}=
+u_k=K_p e_k+K_i I_k+K_d D_k
+$$
+
+The controller uses the appropriate error signals to compute corrective commands for flight stabilization. Controller performance depends on gain selection, model dynamics, and actuator limitations.
+
+## 3.6 Wind Disturbance
+
+Wind disturbance is introduced to examine how external forces affect navigation and tracking performance.
+
+The configured wind force is
+
+$$
+\mathbf{F}_{wind}=
 \begin{bmatrix}
 0.45\\
 1.8\\
@@ -242,14 +290,18 @@ $$
 \end{bmatrix}
 $$
 
-This is a configured simulation force, not a measured real-world wind speed.
+The force acts along the configured coordinate directions in the simulation. The controller attempts to maintain the desired state while the disturbance is applied.
 
-### 3.7 Attitude Disturbance and Recovery
+The wind scenario is intended to demonstrate the controller's response to a disturbance rather than prove robustness under every possible wind condition.
 
-An attitude-related torque disturbance is introduced during the safety phase:
+## 3.7 Attitude Disturbance and Recovery
+
+An external torque is applied to disturb the drone's attitude.
+
+The configured disturbance torque is
 
 $$
-\boldsymbol{\tau}_{\mathrm{disturbance}}=
+\boldsymbol{\tau}_{disturbance}=
 \begin{bmatrix}
 0\\
 4.0\\
@@ -257,60 +309,65 @@ $$
 \end{bmatrix}
 $$
 
-The configured recovery condition is
+The attitude response is monitored during the disturbance. When the safety classifier predicts an unsafe condition and the configured recovery conditions are met, the recovery controller is activated.
+
+The recovery controller attempts to drive the attitude toward the desired stable orientation, usually with desired roll and pitch set to zero.
+
+The simulation records the prediction and recovery activation to evaluate the response.
+
+## 3.8 Machine Learning-Based Safety Prediction
+
+Logistic Regression is used to classify flight conditions as safe or unsafe using the selected input features.
+
+The predicted probability of the unsafe class is calculated as
 
 $$
-\mathrm{recovering}=
-\left(p_{\mathrm{unsafe}}\geq0.20\right)
-\land
-\left(21.0\leq t<27.0\right)
+P(y=1\mid\mathbf{x})=
+\frac{1}{1+\exp[-(\mathbf{w}^{T}\mathbf{x}+b)]}
 $$
 
-where $p_{\mathrm{unsafe}}$ is the predicted unsafe probability.
+where:
 
-The threshold is specific to this demonstration and has not been established as a suitable threshold for real flight.
+- $\mathbf{x}$ is the feature vector.
+- $\mathbf{w}$ is the learned coefficient vector.
+- $b$ is the bias term.
+- $y=1$ represents the unsafe class.
 
-### 3.8 Logistic Regression Safety Prediction
+The classifier's probability is compared against a safety threshold.
 
-Logistic regression estimates the probability of an unsafe state from a feature vector:
+In this implementation, the configured threshold is
 
 $$
-p(y=1\mid\mathbf{x})=
-\frac{1}{1+\exp\left[-(b+\mathbf{w}^{\top}\mathbf{x})\right]}
+P_{threshold}=0.20
 $$
 
-Here, $\mathbf{x}$ represents input features, $\mathbf{w}$ is the coefficient vector, and $b$ is the intercept.
+A prediction at or above this threshold is considered unsafe for the configured recovery logic. Recovery activation also depends on the simulation's configured time window.
 
-The current classifier uses synthetic labels. It demonstrates the integration of a machine-learning prediction with the recovery logic, but its accuracy on real drone data has not been established.
+The classifier uses synthetic training labels in this project. Its predictions therefore demonstrate the integration of machine learning with the simulation and should not be interpreted as a validated real-flight safety model.
 
-### 3.9 Mission Phases
+## 3.9 Mission Phases
 
-| Time | Mission phase |
+The main demonstration follows these phases:
+
+| Approximate Time | Mission Phase |
 |---|---|
 | 0–3 s | Takeoff |
-| 3–5 s | Hover and stabilize |
+| 3–5 s | Hover and stabilization |
 | 5–8 s | Climb above obstacles |
-| 8–12 s | Target 1 navigation |
-| 12–16 s | Target 2 navigation |
-| 16–21 s | Wind and position-hold phase |
-| 21–27 s | Attitude safety and recovery |
+| 8–12 s | Navigate toward target 1 |
+| 12–16 s | Navigate toward target 2 |
+| 16–21 s | Wind disturbance and position holding |
+| 21–27 s | Attitude disturbance and safety recovery |
 | 27–34 s | Final target navigation |
 | 34–46 s | Landing and target reached |
 
-The configured final target is
+These intervals describe the configured demonstration sequence.
 
-$$
-\mathbf{p}_{\mathrm{goal}}=
-\begin{bmatrix}
-9.5\\
-0\\
-1.0
-\end{bmatrix}
-$$
+## 3.10 Observability and Controllability
 
-### 3.10 Observability and Controllability
+Observability and controllability are important concepts in control-system analysis.
 
-For a linear state-space model,
+For a linear system,
 
 $$
 \dot{\mathbf{x}}=A\mathbf{x}+B\mathbf{u}
@@ -320,7 +377,9 @@ $$
 \mathbf{y}=C\mathbf{x}
 $$
 
-the observability matrix is
+where $\mathbf{x}$ is the state vector, $\mathbf{u}$ is the input, and $\mathbf{y}$ is the measured output.
+
+The observability matrix is
 
 $$
 \mathcal{O}=
@@ -333,6 +392,8 @@ CA^{n-1}
 \end{bmatrix}
 $$
 
+A linear system is observable if the observability matrix has full rank.
+
 The controllability matrix is
 
 $$
@@ -342,261 +403,183 @@ B & AB & A^2B & \cdots & A^{n-1}B
 \end{bmatrix}
 $$
 
-For an $n$-state model, full observability and controllability require the respective matrices to have rank $n$.
+A linear system is controllable if the controllability matrix has full rank.
 
-A verified numerical analysis requires defined state-space matrices. The current measured results do not include a completed rank calculation, so no numerical observability or controllability claim is made here.
+These definitions provide a theoretical framework for determining whether internal states can be reconstructed from outputs and whether system states can be influenced by control inputs. A formal observability or controllability claim requires a specified system model and an actual rank analysis; using these concepts alone does not establish that the simulated drone has been proven observable or controllable.
 
-## 4. Implementation
+---
 
-The repository contains the main simulation, model definitions, validation scripts, control-related tests, navigation utilities, and results.
+# 4. Implementation
 
-| File or folder | Purpose |
+The project is implemented in Python and uses MuJoCo for simulation and numerical tools for trajectory planning, control, and machine learning.
+
+| Module | Responsibility |
 |---|---|
-| `full_drone_demo.py` | Main simulation |
-| `full_drone_demo_backup.py` | Backup simulation |
-| `drone_full_demo.xml` | Full-demo XML model |
-| `drone_model.xml` | Drone model |
-| `main.py` | Additional project entry point |
-| `viewer_demo.py` | Viewer demonstration |
-| `attitude_controller_test.py` | Attitude controller testing |
-| `attitude_test.py` | Attitude testing |
-| `check_collisions.py` | Collision checks |
-| `check_full_flight_collisions.py` | Full-flight collision validation |
-| `check_phase_performance.py` | Phase analysis |
-| `validate_drone.py` | Validation script |
-| `validate_drone_backup.py` | Backup validation script |
-| `analyze_flight_results.py` | Flight-result analysis |
-| `create_final_graphs.py` | Result-plot generation |
-| `navigation/` | Navigation modules |
-| `control/` | Control modules |
-| `analysis/` | Analysis utilities |
-| `sensors/` | Sensor-related modules |
-| `results/` | Generated logs, plots, and trajectory data |
-| `requirements.txt` | Python dependencies |
+| Simulation | Creates the drone and environment |
+| Navigation | Generates trajectories and checks obstacle clearance |
+| Control | Computes position and attitude corrections |
+| Prediction | Produces safe/unsafe predictions |
+| Sensors and State Monitoring | Provides the current simulation state |
+| Experiments | Runs configured scenarios |
+| Results | Stores plots, CSV logs, and validation summaries |
 
-## 5. Experimental Setup
+The exact filenames and commands depend on the files present in the repository. Refer to the project directory before running individual scripts.
 
-The following values are taken from the available simulation and validation output.
+---
 
-| Parameter | Recorded value |
+# 5. Experimental Setup
+
+The demonstration uses the following configured settings:
+
+| Parameter | Value |
+|---|---|
+| Simulation environment | MuJoCo |
+| Simulation duration | 46 seconds |
+| Simulation time step | 0.01 seconds |
+| Number of simulation steps | 4600 |
+| Trajectory type | Cubic B-spline |
+| Number of sampled B-spline points | 1601 |
+| Safety probability threshold | 0.20 |
+| Wind force | `[0.45, 1.8, 0.0]` |
+| Disturbance torque | `[0.0, 4.0, 0.0]` |
+| Final target position | `[9.5, 0.0, 1.0]` |
+
+The results listed below describe a recorded run of the configured simulation. Re-run the simulation to reproduce or update the measurements.
+
+---
+
+# 6. Results and Discussion
+
+The recorded simulation summary contains the following measurements:
+
+| Metric | Recorded Result |
 |---|---:|
-| Simulation duration | Approximately 46 s |
-| Simulation time step | 0.0100 s |
-| Simulation steps | 4,600 |
-| B-spline degree | 3 |
-| B-spline samples | 1,601 |
+| Duration | 46.00 s |
+| Steps | 4600 |
+| Time step | 0.0100 s |
 | Drone geometry count | 3 |
 | Obstacle geometry count | 3 |
-| Final target | $(9.5,0,1.0)$ |
-| Unsafe prediction steps | 53 |
-| Recovery-active steps | 53 |
-
-These values describe the recorded run, not a statistical evaluation across multiple trials.
-
-## 6. Results and Discussion
-
-**The figures in this section are intended to be generated by the project. They are not reference images from the internet.**
-
-### 6.1 Actual Simulated Drone Trajectory
-
-![Actual simulated drone trajectory](results/final_trajectory.png)
-
-**Figure 2.** Trajectory plot generated by the simulation.
-
-### 6.2 Actual Attitude Response
-
-![Actual simulated drone attitude](results/final_attitude.png)
-
-**Figure 3.** Attitude plot generated from the project's simulation results.
-
-### 6.3 Actual Safety Prediction and Recovery Results
-
-![Actual safety prediction and recovery](results/final_safety.png)
-
-**Figure 4.** Safety-related plot generated by the project.
-
-### 6.4 Quantitative Results
-
-| Metric | Actual recorded result |
-|---|---:|
-| Simulation duration | 46.00 s |
-| Simulation steps | 4,600 |
-| Time step | 0.0100 s |
-| B-spline samples | 1,601 |
-| Sampled points inside inflated obstacle boxes | 0 |
+| Sampled B-spline points | 1601 |
+| Sampled path points inside inflated obstacle boxes | 0 |
 | Recorded contact events | 0 |
 | Obstacle-contact steps | 0 |
 | Floor-contact steps | 0 |
 | Penetration steps | 0 |
-| Maximum tracking error | 1.0500 m |
-| Maximum absolute roll | 0.000° |
-| Maximum absolute pitch | 14.139° |
 | Unsafe prediction steps | 53 |
 | Recovery-active steps | 53 |
-| Minimum drone-center height | 0.3500 m |
-| Maximum drone-center height | 3.8290 m |
+| Minimum center height | 0.3500 m |
+| Maximum center height | 3.8290 m |
+| Maximum absolute roll | 0.000 degrees |
+| Maximum absolute pitch | 14.139 degrees |
+| Maximum tracking error | 1.0500 m |
 
-### 6.5 Trajectory Discussion
+## 6.1 Trajectory Performance
 
-The generated trajectory contained 1,601 sampled points. The validation output reported zero sampled points inside inflated obstacle boxes. This supports the geometric clearance result for the tested samples but does not prove continuous collision avoidance for the full drone body.
+The cubic B-spline provides a smooth reference path for the navigation controller. The sampled path validation recorded zero points inside the inflated obstacle boxes.
 
-The maximum recorded tracking error was 1.0500 m, indicating that the simulated drone did not coincide exactly with the reference trajectory throughout the run.
+This result applies to the sampled points evaluated by the planner. It does not prove continuous collision avoidance or full-body clearance between samples.
 
-### 6.6 Attitude Discussion
+## 6.2 Attitude Performance
 
-The maximum absolute pitch was 14.139 degrees, while the maximum absolute roll reported by the validation script was 0.000 degrees.
+The recorded run reported a maximum absolute roll of 0.000 degrees and a maximum absolute pitch of 14.139 degrees. These values summarize the recorded attitude signals and should be interpreted alongside the disturbance configuration and the simulation's applied control model.
 
-These values describe the recorded simulation. Additional runs with different disturbances and independent verification of the attitude dynamics would be required to establish robust attitude stabilization.
+## 6.3 Safety Prediction and Recovery
 
-### 6.7 Safety and Recovery Discussion
+The recorded run reported 53 unsafe prediction steps and 53 recovery-active steps. This indicates that the configured recovery logic was active during those recorded steps.
 
-The validation output recorded 53 unsafe prediction steps and 53 recovery-active steps. This demonstrates activation of the configured safety and recovery logic in the current run.
+Because the classifier uses synthetic training labels and the recovery logic includes a configured time window, these results do not independently demonstrate real-world safety prediction accuracy.
 
-Because the classifier uses synthetic labels and the recovery condition includes a specific time window, these results do not establish the predictive accuracy of a real-world safety system.
+## 6.4 Limitations
 
-### 6.8 Collision Validation
+- The drone is evaluated in simulation, not in real-world flight.
+- The Logistic Regression classifier is trained using synthetic labels.
+- Sampled path checks do not establish continuous collision-free motion.
+- Direct body force and torque application is not equivalent to a fully validated four-rotor flight-control model.
+- The reported results describe a particular recorded simulation run.
+- Further testing is required across different obstacles, trajectories, disturbances, and initial conditions.
 
-The validation output reported zero contact events, zero obstacle-contact steps, zero floor-contact steps, and zero penetration steps. These are results from the tested configuration and do not guarantee collision-free behavior under all trajectories, disturbances, or model settings.
+---
 
-## 7. Generated Results and Data
+# 7. Generated Results and Data
 
-The project generates the following result files:
+The following result files may be included in the repository if generated by the simulation:
 
 | File | Description |
 |---|---|
-| `results/final_trajectory.png` | Generated trajectory plot |
-| `results/final_attitude.png` | Generated attitude plot |
-| `results/final_safety.png` | Generated safety plot |
-| `results/trajectory.png` | Additional trajectory plot |
-| `results/attitude.png` | Additional attitude plot |
-| `results/bspline_trajectory.csv` | Sampled trajectory data |
-| `results/drone_flight_log.csv` | Flight and simulation log |
-| `results/drone_collision_events.csv` | Collision-event output |
+| `results/final_trajectory.png` | Final trajectory visualization |
+| `results/final_attitude.png` | Final attitude visualization |
+| `results/final_safety.png` | Safety prediction and recovery visualization |
+| `results/trajectory.png` | Trajectory plot |
+| `results/attitude.png` | Attitude plot |
+| `results/bspline_trajectory.csv` | Sampled B-spline trajectory data |
+| `results/drone_flight_log.csv` | Recorded flight-state data |
+| `results/drone_collision_events.csv` | Recorded collision events |
 | `results/flight_validation_summary.txt` | Validation summary |
 
-The README image paths refer to local repository files. If a file is missing or has a different filename, regenerate the plot or update the image path to match the actual file.
+Only files that actually exist in the repository should be treated as available results.
 
-## 8. How to Run the Project
+---
 
-### 8.1 Requirements
+# 8. How to Run
 
-- Python version compatible with the dependencies in `requirements.txt`.
-- MuJoCo Python bindings.
-- Packages listed in `requirements.txt`.
-- A graphical environment if the simulation uses the MuJoCo viewer.
+## 8.1 Prerequisites
 
-### 8.2 Clone the Repository
+Install Python and MuJoCo in the appropriate project environment. Additional dependencies may include NumPy, Matplotlib, and scikit-learn, depending on the scripts used.
 
-```bash
-git clone https://github.com/myagi548/Drones_S5_AB14_BSpline_PID_ML_Safety.git
-cd Drones_S5_AB14_BSpline_PID_ML_Safety
-```
+Activate the environment configured for the project before running the simulation.
 
-### 8.3 Install Dependencies
+## 8.2 Run the Main Demonstration
 
-On Windows PowerShell:
-
-```powershell
-python -m venv .venv
-.\.venv\Scripts\Activate.ps1
-python -m pip install --upgrade pip
-pip install -r requirements.txt
-```
-
-If an existing Conda environment already contains the required packages, activate that environment instead.
-
-### 8.4 Run the Main Simulation
+From the project root directory, run the main demonstration script if it exists:
 
 ```powershell
 python full_drone_demo.py
 ```
 
-### 8.5 Run Validation and Analysis
+If the script is located elsewhere or uses a different filename, use the actual path and filename from the repository.
 
-Run these commands from the repository root, checking each output before continuing.
+## 8.3 Inspect Results
 
-```powershell
-python validate_drone.py
-```
-
-```powershell
-python check_full_flight_collisions.py
-```
-
-```powershell
-python analyze_flight_results.py
-```
-
-```powershell
-python create_final_graphs.py
-```
-
-Check the terminal output for errors and confirm that the expected result files are created.
-
-## 9. Limitations and Future Work
-
-### 9.1 Limitations
-
-1. The logistic regression classifier uses synthetic labels and has not been validated against real flight data.
-2. The current full demo applies body-level forces and torques rather than modelling individual rotor motors.
-3. Discrete path-point checks do not prove continuous collision avoidance for the complete drone geometry.
-4. The maximum recorded tracking error is 1.0500 m and warrants further investigation.
-5. The reported results come from the available run rather than repeated statistical trials.
-6. No verified numerical observability or controllability rank analysis is included.
-7. Real-world performance and flight safety have not been established.
-
-### 9.2 Future Improvements
-
-- Train and evaluate the classifier using representative, independently labelled flight data.
-- Report confusion-matrix counts, precision, recall, F1-score, and probability calibration.
-- Implement individual rotor thrust and reaction-torque dynamics.
-- Improve trajectory tracking and document controller gains.
-- Add swept-volume or continuous collision checking.
-- Test multiple obstacle arrangements, target locations, and disturbance strengths.
-- Perform a numerical observability and controllability analysis using a defined state-space model.
-- Repeat experiments and compare results across multiple runs.
-- Generate an animation showing the drone, trajectory, obstacles, disturbances, prediction, and recovery.
-- Perform physical testing only after appropriate hardware and safety validation.
-
-## 10. Conclusion
-
-This project demonstrates a simulation-based autonomous drone workflow using cubic B-spline trajectory generation, mission-phase navigation, disturbance simulation, attitude monitoring, logistic regression-based safety prediction, and recovery logic.
-
-The recorded run lasted approximately 46 seconds and included 1,601 sampled B-spline points. The validation output reported zero sampled points inside inflated obstacle boxes, zero recorded contact events, zero obstacle-contact steps, zero floor-contact steps, and zero penetration steps. The maximum tracking error was 1.0500 m, the maximum absolute pitch was 14.139 degrees, and 53 unsafe prediction steps coincided with 53 recovery-active steps.
-
-The results demonstrate integration of the implemented components under the tested configuration. However, synthetic classifier labels, body-level force and torque control, nonzero tracking error, and the limitations of sampled collision checks mean that the system should be treated as a simulation prototype rather than a flight-validated autonomous drone.
-
-## 11. References
-
-These references provide background for the technologies and mathematical methods used in the project. They are not claimed to be the confirmed base paper.
-
-1. Todorov, E., Erez, T., and Tassa, Y. (2012). *MuJoCo: A Physics Engine for Model-Based Control.* IEEE/RSJ International Conference on Intelligent Robots and Systems (IROS).  
-   https://doi.org/10.1109/IROS.2012.6386109
-
-2. Google DeepMind. *MuJoCo Documentation.*  
-   https://mujoco.readthedocs.io/
-
-3. Google DeepMind. *MuJoCo Source Repository.*  
-   https://github.com/google-deepmind/mujoco
-
-4. de Boor, C. (1978). *A Practical Guide to Splines.* Springer.  
-   https://doi.org/10.1007/978-1-4612-6333-3
-
-5. scikit-learn Developers. *LogisticRegression Documentation.*  
-   https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.LogisticRegression.html
-
-6. Amrita Vishwa Vidyapeetham. *Official Website.*  
-   https://www.amrita.edu/
-
-7. Amrita Vishwa Vidyapeetham Logo. *Wikimedia Commons.*  
-   https://commons.wikimedia.org/wiki/File:Amrita-vishwa-vidyapeetham-logo.svg
-
-**Base research paper:** Not provided. Add the confirmed paper title, DOI, or official link when it becomes available.
+After a successful run, inspect the generated CSV files, plots, and validation summary in the results directory. Confirm that each output file exists before referencing it in a report.
 
 ---
 
-## Repository
+# 9. Future Work
 
-**GitHub:** https://github.com/myagi548/Drones_S5_AB14_BSpline_PID_ML_Safety
+Potential improvements include:
 
-**Institution:** Amrita Vishwa Vidyapeetham, School of Artificial Intelligence, Coimbatore, India.
+- Training the safety classifier using realistic flight data.
+- Evaluating prediction accuracy using precision, recall, F1-score, and a confusion matrix.
+- Testing multiple obstacle configurations and different target locations.
+- Improving continuous collision checking and accounting for the drone's full geometry.
+- Implementing a more complete four-rotor dynamics and control model.
+- Evaluating the controller under multiple wind strengths and disturbance directions.
+- Performing formal observability and controllability analysis using an explicit system model.
+- Testing the approach on hardware only after suitable validation and safety precautions.
+
+---
+
+# 10. Conclusion
+
+This project integrates autonomous navigation, cubic B-spline trajectory planning, obstacle-aware path checking, PID-based control, disturbance simulation, and machine-learning-assisted safety recovery in MuJoCo.
+
+The recorded simulation demonstrates the interaction of trajectory following, attitude monitoring, unsafe-condition prediction, and recovery activation. The results provide a basis for further evaluation, while the limitations highlight the need for realistic training data, more complete dynamics, and stronger collision and control validation before any real-world deployment.
+
+---
+
+# 11. References
+
+1. E. Todorov, T. Erez, and Y. Tassa, “MuJoCo: A Physics Engine for Model-Based Control,” *IEEE/RSJ International Conference on Intelligent Robots and Systems*, 2012. https://doi.org/10.1109/IROS.2012.6386109
+2. MuJoCo Documentation. https://mujoco.readthedocs.io/
+3. MuJoCo Source Repository. https://github.com/google-deepmind/mujoco
+4. C. de Boor, *A Practical Guide to Splines*. Springer, 1978. https://doi.org/10.1007/978-1-4612-6333-3
+5. scikit-learn, Logistic Regression Documentation. https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.LogisticRegression.html
+6. Amrita Vishwa Vidyapeetham. https://www.amrita.edu/
+
+---
+
+# 12. Repository
+
+GitHub Repository:
+
+https://github.com/myagi548/Drones_S5_AB14_BSpline_PID_ML_Safety
