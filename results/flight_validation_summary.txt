@@ -1,0 +1,96 @@
+B-SPLINE FLIGHT COLLISION AND SAFETY VALIDATION
+========================================================
+Model: drone_full_demo.xml
+Duration: 46.00 s
+Steps: 4600
+Time step: 0.0100 s
+Drone geometry count: 3
+Obstacle geometry count: 3
+Sampled B-spline points: 1601
+Path points inside inflated obstacle boxes: 0
+Recorded contact events: 0
+Obstacle-contact steps: 0
+Floor-contact steps: 0
+Penetration steps: 0
+Unsafe prediction steps: 53
+Recovery-active steps: 53
+Minimum center height: 0.3500 m
+Maximum center height: 3.8290 m
+Maximum absolute roll: 0.000 degrees
+Maximum absolute pitch: 14.139 degrees
+Maximum tracking error: 1.0500 m
+
+PHASE RESULTS
+--------------------------------------------------------
+TAKEOFF
+  Steps: 301
+  Obstacle-contact steps: 0
+  Floor-contact steps: 0
+  Penetration steps: 0
+  Maximum tracking error: 1.0500 m
+
+HOVER / STABILIZE
+  Steps: 200
+  Obstacle-contact steps: 0
+  Floor-contact steps: 0
+  Penetration steps: 0
+  Maximum tracking error: 0.0254 m
+
+CLIMB ABOVE OBSTACLES
+  Steps: 300
+  Obstacle-contact steps: 0
+  Floor-contact steps: 0
+  Penetration steps: 0
+  Maximum tracking error: 1.0334 m
+
+TARGET 1 / NAVIGATION
+  Steps: 400
+  Obstacle-contact steps: 0
+  Floor-contact steps: 0
+  Penetration steps: 0
+  Maximum tracking error: 0.4037 m
+
+TARGET 2 / NAVIGATION
+  Steps: 400
+  Obstacle-contact steps: 0
+  Floor-contact steps: 0
+  Penetration steps: 0
+  Maximum tracking error: 0.5120 m
+
+WIND: HOLD POSITION
+  Steps: 499
+  Obstacle-contact steps: 0
+  Floor-contact steps: 0
+  Penetration steps: 0
+  Maximum tracking error: 0.5028 m
+
+ATTITUDE SAFETY / RECOVERY
+  Steps: 600
+  Obstacle-contact steps: 0
+  Floor-contact steps: 0
+  Penetration steps: 0
+  Maximum tracking error: 0.4541 m
+
+FINAL TARGET NAVIGATION
+  Steps: 700
+  Obstacle-contact steps: 0
+  Floor-contact steps: 0
+  Penetration steps: 0
+  Maximum tracking error: 0.5230 m
+
+LAND / TARGET REACHED
+  Steps: 1200
+  Obstacle-contact steps: 0
+  Floor-contact steps: 0
+  Penetration steps: 0
+  Maximum tracking error: 0.7585 m
+
+CONTACT RESULT: No drone-obstacle contacts recorded.
+PATH CHECK: No sampled spline points enter the inflated obstacle boxes.
+
+Limitations:
+- The path test samples points and does not prove swept-volume safety.
+- Contact validation uses this script's simulated controller replay.
+- The classifier is trained on synthetic demonstration data.
+- The controller applies direct forces and torques, not rotor dynamics.
+Contact CSV: C:\Users\patim\Downloads\Drone_MuJoCo_Clean_Start\Drone_MuJoCo_Clean_Start\results\drone_collision_events.csv

@@ -1,0 +1,14 @@
+
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.env
+results/*_test.png
+results/*_test.csv
+results/drone_log*.csv
+results/drone_validation.csv
+results/attitude_test.csv
+results/attitude_controller_test.csv
+results/attitude_20*.png
+results/trajectory_20*.png
