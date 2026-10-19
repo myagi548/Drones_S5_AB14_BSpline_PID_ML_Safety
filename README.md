@@ -10,7 +10,7 @@
 | Name | Register Number | Email |
 |---|---|---|
 | P. Myagi Ranganadh | CB.SC.U4AIE24143 | patimamyagi@gmail.com |
-| Devi Sri | CB.SC.U4AIE24163 | chodagiridevisri@gmail.com |
+| Devi Sri | CB.SC.U4AIE24163 | devisrichodagiri@gmail.com |
 | Monisha | CB.SC.U4AIE24157 | vemurimonisha@gmial.com |
 
 ---
